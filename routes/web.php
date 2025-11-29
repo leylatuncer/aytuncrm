@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CrmRecordController;
+use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Auth;
 
@@ -53,7 +54,7 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class])->pref
 // 👥 TÜM KULLANICILAR - CRM Modülü
 // ============================================
 Route::middleware(['auth'])->group(function () {
-    
+
     // ============================================
     // 🏢 CRM - Firma Kayıtları Modülü
     // ============================================
@@ -62,12 +63,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [CrmRecordController::class, 'index'])->name('index');
         Route::get('/create', [CrmRecordController::class, 'create'])->name('create');
         Route::post('/', [CrmRecordController::class, 'store'])->name('store');
-        
+
         // ✅ Excel Export - Sadece Admin (/{id}'den ÖNCE olmalı!)
         Route::get('/export', [CrmRecordController::class, 'export'])->name('export');
-        
+
         Route::get('/{id}', [CrmRecordController::class, 'show'])->name('show');
-        
+
         // Düzenleme ve Silme - Sadece Admin
         Route::middleware([\App\Http\Middleware\PreventDataModification::class])->group(function () {
             Route::get('/{id}/edit', [CrmRecordController::class, 'edit'])->name('edit');
@@ -77,9 +78,24 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // ============================================
+    // 🔔 HATIRLATMALAR - Tüm Kullanıcılar
+    // ============================================
+    Route::prefix('reminders')->name('reminders.')->group(function () {
+        Route::get('/', [ReminderController::class, 'index'])->name('index');
+        Route::get('/create', [ReminderController::class, 'create'])->name('create');
+        Route::post('/', [ReminderController::class, 'store'])->name('store');
+        Route::get('/{reminder}', [ReminderController::class, 'show'])->name('show');
+        Route::get('/{reminder}/edit', [ReminderController::class, 'edit'])->name('edit');
+        Route::put('/{reminder}', [ReminderController::class, 'update'])->name('update');
+        Route::delete('/{reminder}', [ReminderController::class, 'destroy'])->name('destroy');
+        Route::post('/{reminder}/toggle-complete', [ReminderController::class, 'toggleComplete'])
+            ->name('toggle-complete');
+    });
+
+    // ============================================
     // 📍 AJAX - İlçeleri Getir (İl seçilince)
     // ============================================
     Route::get('/api/districts/{province_id}', [CrmRecordController::class, 'getDistricts'])
         ->name('api.districts');
-    
+
 });

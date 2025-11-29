@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'AYTUN CRM Sistemi')</title>
-    
+
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    
+
     <style>
         body {
             min-height: 100vh;
@@ -150,7 +150,7 @@
             }
         }
     </style>
-    
+
     @stack('styles')
 </head>
 <body>
@@ -185,7 +185,7 @@
                             </span>
                             <!-- Desktop: Tam bilgi -->
                             <span class="user-info-text">
-                                <i class="bi bi-person-circle me-2"></i> 
+                                <i class="bi bi-person-circle me-2"></i>
                                 <span>{{ auth()->user()->name }}</span>
                                 @if(auth()->user()->role === 'admin')
                                     <span class="badge bg-warning text-dark ms-2">Admin</span>
@@ -196,7 +196,7 @@
                             <form action="{{ route('logout') }}" method="POST" class="d-inline">
                                 @csrf
                                 <button type="submit" class="btn btn-outline-light btn-sm">
-                                    <i class="bi bi-box-arrow-right"></i> 
+                                    <i class="bi bi-box-arrow-right"></i>
                                     <span class="d-none d-sm-inline">Çıkış</span>
                                 </button>
                             </form>
@@ -221,16 +221,29 @@
             <ul class="nav flex-column">
                 <!-- Dashboard - Herkes görebilir -->
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" 
+                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
                        href="{{ route('dashboard') }}">
                         <i class="bi bi-speedometer2"></i> Dashboard
                     </a>
                 </li>
+                <!-- Hatırlatmalar - Herkes görebilir -->
+    <li class="nav-item">
+        <a class="nav-link {{ request()->routeIs('reminders.*') ? 'active' : '' }}"
+           href="{{ route('reminders.index') }}">
+            <i class="bi bi-bell"></i> Hatırlatmalar
+            @php
+                $urgentCount = \App\Models\Reminder::getUrgentCount();
+            @endphp
+            @if($urgentCount > 0)
+                <span class="badge bg-danger rounded-pill ms-2">{{ $urgentCount }}</span>
+            @endif
+        </a>
+    </li>
 
                 <!-- Kullanıcılar - Sadece Admin -->
                 @if(auth()->user()->role === 'admin')
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" 
+                        <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}"
                            href="{{ route('users.index') }}">
                             <i class="bi bi-people"></i> Kullanıcılar
                         </a>
@@ -259,7 +272,7 @@
 
         @if($errors->any())
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="bi bi-exclamation-triangle"></i> 
+                <i class="bi bi-exclamation-triangle"></i>
                 <strong>Hata!</strong> Lütfen formu kontrol edin.
                 <ul class="mb-0 mt-2">
                     @foreach($errors->all() as $error)
@@ -291,7 +304,7 @@
 
     <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <!-- Sidebar Toggle Script -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -325,7 +338,7 @@
             }
         });
     </script>
-    
+
     @stack('scripts')
 </body>
 </html>
